@@ -1,0 +1,22 @@
+{
+  "name": "automated-warehouse",
+  "version": "1.0.0",
+  "description": "An automated warehouse. where the robot is in charge of the warehouse management",
+  "main": "index.js",
+  "author": "Richard Kadian",
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "fastify": "^4.6.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/node": "^18.7.18",
+    "typescript": "^4.8.3"
+  }
+}
