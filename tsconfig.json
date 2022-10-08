@@ -1,3 +1,15 @@
 {
-  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json"
+  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "jsx": "react",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitAny": true,
+    "target": "es5",
+    "allowJs": true,
+    "moduleResolution": "node"
+  },
+  "exclude": ["node_modules", "dist"]
 }
