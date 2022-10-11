@@ -1,5 +1,6 @@
+import type { Types } from "mongoose";
 export default interface ICustomer {
-  _id: number;
+  _id: Types.ObjectId;
   name: string;
   email: string;
   password: string;

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Types } from "mongoose";
 
 import fastify from "fastify";
 import fs from "fs";
@@ -13,19 +14,27 @@ import type IRobot from "../Robot/IRobot";
 import Robot from "../Robot/Robot.js";
 
 import CustomerModel from "../Schemas/customerSchema.js";
+import CellModel from "../Schemas/cellSchema.js";
 
-import { PORT, DB_URI, ERRORS } from "../constants.js";
+import { PORT, DB_URI } from "../constants.js";
 import type ICustomer from "src/Customer/ICustomer";
 
 export default class WarehouseServer implements IWarehouseServer {
   private server;
   private robot: IRobot;
 
+  // TODO: Queue for commands for the robot
+  // private robotTasks: Queue;
+
   constructor() {
     this.robot = new Robot();
     this.server = fastify();
 
+    // TODO: write get requests
     this.initGetRequests();
+
+    // TODO: write post requests
+    // this.initPostRequests();
 
     this.server.listen({ port: PORT }, (err, address) => {
       if (err) {
@@ -45,7 +54,12 @@ export default class WarehouseServer implements IWarehouseServer {
         throw new Error("user already exists. Sign up not possible");
       }
 
-      const newCustomer = new CustomerModel({ name, email, password });
+      const newCustomer = new CustomerModel({
+        _id: new Types.ObjectId(),
+        name,
+        email,
+        password,
+      });
 
       await newCustomer.save();
       await mongoose.disconnect();
@@ -82,24 +96,61 @@ export default class WarehouseServer implements IWarehouseServer {
 
       return false;
     }
-
-    // return mongoose.model('Animal').find({ type: this.type }
   }
 
-  rentCells(quantityOfCells: number): void {
-    throw new Error("Method not implemented.");
+  async rentCells(
+    quantityOfCells: number,
+    ownerId: Types.ObjectId,
+  ): Promise<boolean> {
+    try {
+      if (!this.checkCustomerPay()) {
+        return false;
+      }
+
+      await mongoose.connect(DB_URI);
+
+      const freeCells: ICell[] | null = await CellModel.find({
+        ownerId: -1,
+      }).lean();
+
+      if (!freeCells || freeCells.length < quantityOfCells) {
+        throw new Error(
+          `There are not enough free cells for your order. There are only ${freeCells} free cells`,
+        );
+      }
+
+      for (let i = 0; i < quantityOfCells; i++) {
+        await CellModel.findByIdAndUpdate(freeCells[i]?.id, {
+          ownerId,
+        });
+      }
+
+      await mongoose.disconnect();
+
+      return true;
+    } catch (error) {
+      console.error(error);
+
+      return false;
+    }
   }
 
   getFromCells(cellsIds: number[]): void {
-    throw new Error("Method not implemented.");
+    this.robot.getFromCell(cellsIds);
   }
 
   putInCells(quantityOfCells: number): boolean {
     throw new Error("Method not implemented.");
   }
 
-  getAllCells(): ICell[] {
-    throw new Error("Method not implemented.");
+  async getInfoAboutAllCells(): Promise<ICell[]> {
+    await mongoose.connect(DB_URI);
+
+    const allCells: ICell[] = await CellModel.find({}).lean();
+
+    await mongoose.disconnect();
+
+    return allCells;
   }
 
   getRobotPosition(): IPosition {
@@ -128,8 +179,11 @@ export default class WarehouseServer implements IWarehouseServer {
   }
 
   // private initPostRequests() {
-  //   this.server.post("signUp", () => {
-  //     return "This should return a login page for the manager\n";
-  //   });
+  //   signUp, logIn, rentCells, getFromCells, putInCells
   // }
+
+  // This method is used to randoly determine if a customer has money to pay the rent fot the cell(s)
+  private checkCustomerPay(): boolean {
+    return Boolean(Math.round(Math.random()));
+  }
 }

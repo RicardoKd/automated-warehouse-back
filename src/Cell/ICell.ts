@@ -1,5 +1,7 @@
+import type { Types } from "mongoose";
 export default interface ICell {
-  ownerId: number;
+  id: number;
+  ownerId: Types.ObjectId;
   description: string;
   isOccupied: boolean;
 }
