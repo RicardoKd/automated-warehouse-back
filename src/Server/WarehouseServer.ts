@@ -24,7 +24,7 @@ export default class WarehouseServer implements IWarehouseServer {
   private robot: IRobot;
 
   // TODO: Queue for commands for the robot
-  // private robotTasks: Queue;
+  // private robotTasks: IQueue;
 
   constructor() {
     this.robot = new Robot();
@@ -34,7 +34,7 @@ export default class WarehouseServer implements IWarehouseServer {
     this.initGetRequests();
 
     // TODO: write post requests
-    // this.initPostRequests();
+    this.initPostRequests();
 
     this.server.listen({ port: PORT }, (err, address) => {
       if (err) {
@@ -46,7 +46,11 @@ export default class WarehouseServer implements IWarehouseServer {
     });
   }
 
-  async signUp(name: string, email: string, password: string) {
+  async signUp(
+    name: string,
+    email: string,
+    password: string,
+  ): Promise<boolean> {
     try {
       await mongoose.connect(DB_URI);
 
@@ -135,22 +139,97 @@ export default class WarehouseServer implements IWarehouseServer {
     }
   }
 
-  getFromCells(cellsIds: number[]): void {
-    this.robot.getFromCell(cellsIds);
+  async getCellContent(
+    cellsIds: number[],
+    customerId: Types.ObjectId,
+  ): Promise<boolean> {
+    try {
+      await mongoose.connect(DB_URI);
+
+      cellsIds.forEach(async (cellId) => {
+        await this.robot.getOneCellContent(cellId);
+        const cell: ICell | null = await CellModel.findOneAndUpdate(
+          { id: cellId, ownerId: customerId },
+          { description: "None", isOccupied: false },
+        ).lean(); // is lean() needed here ???
+
+        if (!cell) {
+          throw new Error(`Cell not found. Invalid cellId: ${cellId}`);
+        }
+      });
+
+      await mongoose.disconnect();
+
+      return true;
+    } catch (error) {
+      console.error(error);
+
+      return false;
+    }
   }
 
-  putInCells(quantityOfCells: number): boolean {
-    throw new Error("Method not implemented.");
+  async putContentInCells(
+    quantityOfCellsToBeUsed: number,
+    ownerId: Types.ObjectId,
+    cellsDescriptions: string[],
+  ): Promise<boolean> {
+    try {
+      if (quantityOfCellsToBeUsed !== cellsDescriptions.length) {
+        throw new Error(
+          `Descriptions must be provided for eaach cell. Not enough descriptions`,
+        );
+      }
+
+      await mongoose.connect(DB_URI);
+
+      const rentedCells: ICell[] | null = await CellModel.find({
+        ownerId,
+      }).lean();
+
+      if (!rentedCells) {
+        throw new Error(
+          `You need ${quantityOfCellsToBeUsed} more cells to rent`,
+        );
+      }
+
+      if (rentedCells.length < quantityOfCellsToBeUsed) {
+        const a = quantityOfCellsToBeUsed - rentedCells.length;
+
+        throw new Error(`You need ${a} more cells to rent`);
+      }
+
+      for (let i = 0; i < quantityOfCellsToBeUsed; i++) {
+        await this.robot.putInCell(rentedCells[i]?.id as number);
+        await CellModel.findByIdAndUpdate(rentedCells[i]?.id, {
+          description: cellsDescriptions[i],
+          isOccupied: true,
+        });
+      }
+
+      await mongoose.disconnect();
+
+      return true;
+    } catch (error) {
+      console.error(error);
+
+      return false;
+    }
   }
 
-  async getInfoAboutAllCells(): Promise<ICell[]> {
-    await mongoose.connect(DB_URI);
+  async getInfoAboutAllCellsOrNull(): Promise<ICell[] | null> {
+    try {
+      await mongoose.connect(DB_URI);
 
-    const allCells: ICell[] = await CellModel.find({}).lean();
+      const allCells: ICell[] = await CellModel.find({}).lean();
 
-    await mongoose.disconnect();
+      await mongoose.disconnect();
 
-    return allCells;
+      return allCells;
+    } catch (error) {
+      console.error(error);
+
+      return null;
+    }
   }
 
   getRobotPosition(): IPosition {
@@ -178,12 +257,16 @@ export default class WarehouseServer implements IWarehouseServer {
     });
   }
 
-  // private initPostRequests() {
-  //   signUp, logIn, rentCells, getFromCells, putInCells
-  // }
+  private initPostRequests() {
+    throw new Error("Method not implemented.");
+    //signUp, logIn, rentCells, getFromCells, putInCells
+  }
 
-  // This method is used to randoly determine if a customer has money to pay the rent fot the cell(s)
   private checkCustomerPay(): boolean {
+    /**
+     * This method emulates the amount of money on customer's account.
+     * It randoly determines if there are enough money.
+     */
     return Boolean(Math.round(Math.random()));
   }
 }

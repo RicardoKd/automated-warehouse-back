@@ -18,42 +18,99 @@ export default class Robot implements IRobot {
     this.cellPostitioningMatrix = this.generateCellPostitioningMatrix();
   }
 
-  async getFromCell(cellsIds: number[]): Promise<void> {
-    cellsIds.forEach(async (cellId) => {
+  async getCellContent(cellsIds: number[]): Promise<boolean> {
+    try {
+      cellsIds.forEach(async (cellId) => {
+        await this.driveToCell(cellId);
+        await this.timeToLoadUnloadCell();
+        await this.driveToBasePosition();
+        await this.timeToLoadUnloadCell();
+      });
+
+      return true;
+    } catch (error) {
+      console.log(error);
+
+      return false;
+    }
+  }
+
+  async getOneCellContent(cellId: number): Promise<boolean> {
+    try {
       await this.driveToCell(cellId);
       await this.timeToLoadUnloadCell();
       await this.driveToBasePosition();
       await this.timeToLoadUnloadCell();
-    });
+
+      return true;
+    } catch (error) {
+      console.log(error);
+
+      return false;
+    }
   }
 
-  putInCell(cellId: number): void {
-    throw new Error("Method not implemented.");
+  async putInCells(cellsIds: number[]): Promise<boolean> {
+    try {
+      cellsIds.forEach(async (cellId) => {
+        await this.driveToBasePosition();
+        await this.timeToLoadUnloadCell();
+        await this.driveToCell(cellId);
+        await this.timeToLoadUnloadCell();
+      });
+
+      return true;
+    } catch (error) {
+      console.log(error);
+
+      return false;
+    }
+  }
+
+  async putInCell(cellId: number): Promise<boolean> {
+    try {
+      await this.driveToBasePosition();
+      await this.timeToLoadUnloadCell();
+      await this.driveToCell(cellId);
+      await this.timeToLoadUnloadCell();
+
+      return true;
+    } catch (error) {
+      console.log(error);
+
+      return false;
+    }
   }
 
   private async driveToCell(cellId: number) {
-    // let robotIsBusy = false;
+    const targetRow = Number(this.cellPostitioningMatrix[cellId]?.row);
+    const targetColumn = Number(this.cellPostitioningMatrix[cellId]?.column);
 
-    // check if the robot is correctly aligned relatively to the row
-    if (this.position.row !== this.cellPostitioningMatrix[cellId]?.row) {
+    // check if the robot is already on the targetRow
+    if (this.position.row !== targetRow) {
       // move to col[0]
       while (this.position.column !== 0) {
         await this.moveLeft();
       }
 
-      // move to the needed row
-      while (this.position.row !== this.cellPostitioningMatrix[cellId]?.row) {
-        const currentRowGreaterThanNeeded: boolean =
-          this.position.row > Number(this.cellPostitioningMatrix[cellId]?.row);
-
-        if (currentRowGreaterThanNeeded) {
+      // move to the targetRow
+      while (this.position.row !== targetRow) {
+        if (this.position.row > targetRow) {
           await this.moveBackward();
         } else {
           await this.moveForward();
         }
       }
     }
-    // align according to the column
+
+    // move to the targetColumn
+    while (this.position.column !== targetColumn) {
+      if (this.position.column > targetColumn) {
+        await this.moveLeft();
+      } else {
+        await this.moveRight();
+      }
+    }
   }
 
   private async driveToBasePosition() {
@@ -119,6 +176,10 @@ export default class Robot implements IRobot {
   }
 
   private generateCellPostitioningMatrix(): IPosition[] {
+    /**
+     * Creates an array of IPosition objects for each cell.
+     * The index of each object corresponds to Cell.id
+     */
     const cellPositions: IPosition[] = [];
 
     let k = 1;

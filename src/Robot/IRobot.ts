@@ -3,6 +3,8 @@ import type IPosition from "./IPosition";
 export default interface IRobot {
   getCurrentPosition(): IPosition;
   getKmDriven(): number;
-  getFromCell(cellsIds: number[]): Promise<void>;
-  putInCell(cellId: number): void;
+  getCellContent(cellsIds: number[]): Promise<boolean>;
+  getOneCellContent(cellId: number): Promise<boolean>;
+  putInCells(cellsIds: number[]): Promise<boolean>;
+  putInCell(cellId: number): Promise<boolean>;
 }

@@ -3,6 +3,6 @@ import type IPosition from "../Robot/IPosition";
 
 export default interface IManagerServer {
   getRobotPosition(): IPosition;
-  getInfoAboutAllCells(): Promise<ICell[]>;
+  getInfoAboutAllCellsOrNull(): Promise<ICell[] | null>;
   logIn(email: string, password: string): Promise<boolean>;
 }
