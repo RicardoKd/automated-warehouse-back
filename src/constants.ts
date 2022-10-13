@@ -1,4 +1,4 @@
-import type IPosition from "./Robot/IPosition";
+import type IPosition from "./Types/IPosition";
 
 const ROBOT_BASE_POSITION: IPosition = {
   row: 0,

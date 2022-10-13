@@ -1,4 +1,4 @@
-import type IPosition from "./IPosition";
+import type IPosition from "../Types/IPosition";
 
 export default interface IRobot {
   getCurrentPosition(): IPosition;

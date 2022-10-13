@@ -1,5 +1,5 @@
 import type IRobot from "./IRobot";
-import type IPosition from "./IPosition";
+import type IPosition from "../Types/IPosition";
 import {
   WAREHOUSE_SIZE,
   ROBOT_BASE_POSITION,

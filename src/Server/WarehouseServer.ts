@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 import fastify from "fastify";
 import fs from "fs";
 
-import type IPosition from "../Robot/IPosition";
+import type IPosition from "../Types/IPosition";
 
 import type IWarehouseServer from "./IWarehouseServer";
 
