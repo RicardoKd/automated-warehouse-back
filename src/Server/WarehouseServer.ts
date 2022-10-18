@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 import fastify from "fastify";
 import fs from "fs";
@@ -16,7 +15,7 @@ import Robot from "../Robot/Robot.js";
 import CustomerModel from "../Schemas/customerSchema.js";
 import CellModel from "../Schemas/cellSchema.js";
 
-import { PORT, DB_URI } from "../constants.js";
+import { PORT, DB_URI, RESERVED_DEFAULT_OWNER_ID } from "../constants.js";
 import type ICustomer from "src/Customer/ICustomer";
 
 export default class WarehouseServer implements IWarehouseServer {
@@ -26,15 +25,12 @@ export default class WarehouseServer implements IWarehouseServer {
   // TODO: Queue for commands for the robot
   // private robotTasks: IQueue;
 
+  // TODO: Method for fastify server startup ???
+  // TODO: How to use db roles for security ???
+
   constructor() {
     this.robot = new Robot();
     this.server = fastify();
-
-    // TODO: write get requests
-    this.initGetRequests();
-
-    // TODO: write post requests
-    this.initPostRequests();
 
     this.server.listen({ port: PORT }, (err, address) => {
       if (err) {
@@ -44,6 +40,9 @@ export default class WarehouseServer implements IWarehouseServer {
 
       console.log(`Server listening at ${address}`);
     });
+
+    this.initGetRequests();
+    this.initPostRequests();
   }
 
   async signUp(
@@ -55,11 +54,12 @@ export default class WarehouseServer implements IWarehouseServer {
       await mongoose.connect(DB_URI);
 
       if (await CustomerModel.findOne({ email })) {
+        // res.status(400).send("User already registered.");
         throw new Error("user already exists. Sign up not possible");
       }
 
       const newCustomer = new CustomerModel({
-        _id: new Types.ObjectId(),
+        _id: this.generateOwnerId(),
         name,
         email,
         password,
@@ -73,6 +73,7 @@ export default class WarehouseServer implements IWarehouseServer {
       return true;
     } catch (error) {
       console.error(error);
+      // res.status(500).send("Something went wrong");
 
       return false;
     }
@@ -104,6 +105,7 @@ export default class WarehouseServer implements IWarehouseServer {
 
   async rentCells(
     quantityOfCells: number,
+    rentEndDate: Date,
     ownerId: Types.ObjectId,
   ): Promise<boolean> {
     try {
@@ -114,7 +116,7 @@ export default class WarehouseServer implements IWarehouseServer {
       await mongoose.connect(DB_URI);
 
       const freeCells: ICell[] | null = await CellModel.find({
-        ownerId: -1,
+        ownerId: RESERVED_DEFAULT_OWNER_ID,
       }).lean();
 
       if (!freeCells || freeCells.length < quantityOfCells) {
@@ -126,6 +128,7 @@ export default class WarehouseServer implements IWarehouseServer {
       for (let i = 0; i < quantityOfCells; i++) {
         await CellModel.findByIdAndUpdate(freeCells[i]?.id, {
           ownerId,
+          rentEndDate,
         });
       }
 
@@ -216,11 +219,11 @@ export default class WarehouseServer implements IWarehouseServer {
     }
   }
 
-  async getInfoAboutAllCellsOrNull(): Promise<ICell[] | null> {
+  async getCellsInfoOrNull(filter: object): Promise<ICell[] | null> {
     try {
       await mongoose.connect(DB_URI);
 
-      const allCells: ICell[] = await CellModel.find({}).lean();
+      const allCells: ICell[] = await CellModel.find(filter).lean();
 
       await mongoose.disconnect();
 
@@ -232,13 +235,32 @@ export default class WarehouseServer implements IWarehouseServer {
     }
   }
 
+  async getCustomersCellsInfoOrNull(
+    filter: ICell,
+    customerId: Types.ObjectId,
+  ): Promise<ICell[] | null> {
+    // (filter as { ownerId: Types.ObjectId }).ownerId = customerId;
+
+    filter.ownerId = customerId;
+
+    return await this.getCellsInfoOrNull(filter);
+  }
+
   getRobotPosition(): IPosition {
     return this.robot.getCurrentPosition();
   }
 
   private initGetRequests() {
-    this.server.get("/ping", async (req) => {
-      return req;
+    this.server.get("/robot-position", () => {
+      return this.getRobotPosition();
+    });
+
+    this.server.get("/all-cells-info", async () => {
+      return await this.getCellsInfoOrNull({});
+    });
+
+    this.server.get("/cells-info/:", async () => {
+      return await this.getCellsInfoOrNull({});
     });
 
     this.server.get("/", async () => {
@@ -258,7 +280,31 @@ export default class WarehouseServer implements IWarehouseServer {
   }
 
   private initPostRequests() {
-    throw new Error("Method not implemented.");
+    const opts = {
+      schema: {
+        body: {
+          type: "object",
+          required: ["email", "password"],
+          properties: {
+            email: { type: "string" },
+            password: { type: "string" },
+          },
+        },
+      },
+    };
+
+    this.server.post<{ Body: { email: string; password: string } }>(
+      "/signIn",
+      opts,
+      async (request) => {
+        // (this as ICustomerServer).logIn(request.body.email, request.body.password);
+
+        const { email, password } = request.body;
+
+        return { email, password };
+      },
+    );
+
     //signUp, logIn, rentCells, getFromCells, putInCells
   }
 
@@ -268,5 +314,15 @@ export default class WarehouseServer implements IWarehouseServer {
      * It randoly determines if there are enough money.
      */
     return Boolean(Math.round(Math.random()));
+  }
+
+  private generateOwnerId(): Types.ObjectId {
+    let newOwnerId = new Types.ObjectId();
+
+    while (newOwnerId.toString() === RESERVED_DEFAULT_OWNER_ID) {
+      newOwnerId = new Types.ObjectId();
+    }
+
+    return newOwnerId;
   }
 }
