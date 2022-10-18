@@ -2,7 +2,7 @@
   "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "./dist",
+    "outDir": "./dist/",
     "jsx": "react",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
