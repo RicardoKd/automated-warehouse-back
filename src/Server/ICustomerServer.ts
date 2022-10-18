@@ -1,4 +1,5 @@
 import type { Types } from "mongoose";
+import type ICell from "../Cell/ICell";
 
 export default interface ICustomerServer {
   signUp(name: string, email: string, password: string): Promise<boolean>;
@@ -17,4 +18,8 @@ export default interface ICustomerServer {
     ownerId: Types.ObjectId,
     cellsDescriptions: string[],
   ): Promise<boolean>;
+  getCustomersCellsInfoOrNull(
+    filter: object,
+    customerId: Types.ObjectId,
+  ): Promise<ICell[] | null>;
 }
