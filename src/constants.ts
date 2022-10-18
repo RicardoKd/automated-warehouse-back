@@ -18,6 +18,8 @@ const PORT = 8080;
 
 const DB_URI = "mongodb://127.0.0.1:27017/local";
 
+const MAX_TIMESTAMP = 8640000000000000;
+
 const ERRORS = {
   SIGN_UP_FAILED: { TEXT: "CAN'T SIGN UP", CODE: 1 },
 };
@@ -29,5 +31,6 @@ export {
   ROBOT_SPEED_TO_LOAD_UNLOAD_CELL,
   PORT,
   DB_URI,
+  MAX_TIMESTAMP,
   ERRORS,
 };

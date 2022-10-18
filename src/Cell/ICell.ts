@@ -4,4 +4,7 @@ export default interface ICell {
   ownerId: Types.ObjectId;
   description: string;
   isOccupied: boolean;
+  rentEndDate: Date;
+
+  rentingDaysLeft(): number;
 }
