@@ -1,7 +1,7 @@
 import mongoose, { Types } from "mongoose";
 
 import fastify from "fastify";
-import fs from "fs";
+import cors from "@fastify/cors";
 
 import type IPosition from "../Types/IPosition";
 
@@ -9,7 +9,6 @@ import type IWarehouseServer from "./IWarehouseServer";
 
 import type ICell from "src/Cell/ICell";
 
-import type IRobot from "../Robot/IRobot";
 import Robot from "../Robot/Robot.js";
 
 import CustomerModel from "../Schemas/customerSchema.js";
@@ -18,19 +17,33 @@ import CellModel from "../Schemas/cellSchema.js";
 import { PORT, DB_URI, RESERVED_DEFAULT_OWNER_ID } from "../constants.js";
 import type ICustomer from "src/Customer/ICustomer";
 
+// import cellRoutes from "../routes/cellRoutes.js";
+import customerRoutes from "../routes/customerRoutes.js";
+import generalRoutes from "../routes/generalRoutes.js";
+import robotRoutes from "../routes/robotRoutes.js";
+
 export default class WarehouseServer implements IWarehouseServer {
   private server;
-  private robot: IRobot;
 
   // TODO: Queue for commands for the robot
   // private robotTasks: IQueue;
 
   // TODO: Method for fastify server startup ???
-  // TODO: How to use db roles for security ???
+
+  // TODO: How to store error messages and codes ???
 
   constructor() {
-    this.robot = new Robot();
     this.server = fastify();
+
+    this.server.decorate("robot", new Robot());
+
+    this.server.register(generalRoutes);
+    this.server.register(customerRoutes);
+    this.server.register(robotRoutes);
+    this.server.register(cors, {
+      credentials: true,
+      origin: "*",
+    });
 
     this.server.listen({ port: PORT }, (err, address) => {
       if (err) {
@@ -40,9 +53,6 @@ export default class WarehouseServer implements IWarehouseServer {
 
       console.log(`Server listening at ${address}`);
     });
-
-    this.initGetRequests();
-    this.initPostRequests();
   }
 
   async signUp(
@@ -54,12 +64,13 @@ export default class WarehouseServer implements IWarehouseServer {
       await mongoose.connect(DB_URI);
 
       if (await CustomerModel.findOne({ email })) {
-        // res.status(400).send("User already registered.");
         throw new Error("user already exists. Sign up not possible");
       }
 
+      const newCustomerId = this.generateOwnerId();
+
       const newCustomer = new CustomerModel({
-        _id: this.generateOwnerId(),
+        _id: newCustomerId,
         name,
         email,
         password,
@@ -73,7 +84,6 @@ export default class WarehouseServer implements IWarehouseServer {
       return true;
     } catch (error) {
       console.error(error);
-      // res.status(500).send("Something went wrong");
 
       return false;
     }
@@ -106,10 +116,12 @@ export default class WarehouseServer implements IWarehouseServer {
   async rentCells(
     quantityOfCells: number,
     rentEndDate: Date,
-    ownerId: Types.ObjectId,
+    ownerId: Types.ObjectId | string,
   ): Promise<boolean> {
     try {
       if (!this.checkCustomerPay()) {
+        console.log("Can`t pay!");
+
         return false;
       }
 
@@ -126,10 +138,13 @@ export default class WarehouseServer implements IWarehouseServer {
       }
 
       for (let i = 0; i < quantityOfCells; i++) {
-        await CellModel.findByIdAndUpdate(freeCells[i]?.id, {
-          ownerId,
-          rentEndDate,
-        });
+        await CellModel.findOneAndUpdate(
+          { id: freeCells[i]?.id },
+          {
+            ownerId,
+            rentEndDate,
+          },
+        );
       }
 
       await mongoose.disconnect();
@@ -150,7 +165,7 @@ export default class WarehouseServer implements IWarehouseServer {
       await mongoose.connect(DB_URI);
 
       cellsIds.forEach(async (cellId) => {
-        await this.robot.getOneCellContent(cellId);
+        await this.server.robot.getOneCellContent(cellId);
         const cell: ICell | null = await CellModel.findOneAndUpdate(
           { id: cellId, ownerId: customerId },
           { description: "None", isOccupied: false },
@@ -173,7 +188,7 @@ export default class WarehouseServer implements IWarehouseServer {
 
   async putContentInCells(
     quantityOfCellsToBeUsed: number,
-    ownerId: Types.ObjectId,
+    ownerId: Types.ObjectId | string,
     cellsDescriptions: string[],
   ): Promise<boolean> {
     try {
@@ -202,7 +217,7 @@ export default class WarehouseServer implements IWarehouseServer {
       }
 
       for (let i = 0; i < quantityOfCellsToBeUsed; i++) {
-        await this.robot.putInCell(rentedCells[i]?.id as number);
+        await this.server.robot.putInCell(rentedCells[i]?.id as number);
         await CellModel.findByIdAndUpdate(rentedCells[i]?.id, {
           description: cellsDescriptions[i],
           isOccupied: true,
@@ -237,75 +252,15 @@ export default class WarehouseServer implements IWarehouseServer {
 
   async getCustomersCellsInfoOrNull(
     filter: ICell,
-    customerId: Types.ObjectId,
+    customerId: Types.ObjectId | string,
   ): Promise<ICell[] | null> {
-    // (filter as { ownerId: Types.ObjectId }).ownerId = customerId;
-
     filter.ownerId = customerId;
 
     return await this.getCellsInfoOrNull(filter);
   }
 
   getRobotPosition(): IPosition {
-    return this.robot.getCurrentPosition();
-  }
-
-  private initGetRequests() {
-    this.server.get("/robot-position", () => {
-      return this.getRobotPosition();
-    });
-
-    this.server.get("/all-cells-info", async () => {
-      return await this.getCellsInfoOrNull({});
-    });
-
-    this.server.get("/cells-info/:", async () => {
-      return await this.getCellsInfoOrNull({});
-    });
-
-    this.server.get("/", async () => {
-      return "This is the main page\n";
-    });
-
-    this.server.get("/bg.png", (req, reply) => {
-      fs.readFile("./BG-3.jpg", (err, fileBuffer) => {
-        reply.type("image/jpeg");
-        reply.send(err || fileBuffer);
-      });
-    });
-
-    this.server.get("/manager", async () => {
-      return "This should return a login page for the manager\n";
-    });
-  }
-
-  private initPostRequests() {
-    const opts = {
-      schema: {
-        body: {
-          type: "object",
-          required: ["email", "password"],
-          properties: {
-            email: { type: "string" },
-            password: { type: "string" },
-          },
-        },
-      },
-    };
-
-    this.server.post<{ Body: { email: string; password: string } }>(
-      "/signIn",
-      opts,
-      async (request) => {
-        // (this as ICustomerServer).logIn(request.body.email, request.body.password);
-
-        const { email, password } = request.body;
-
-        return { email, password };
-      },
-    );
-
-    //signUp, logIn, rentCells, getFromCells, putInCells
+    return this.server.robot.getCurrentPosition();
   }
 
   private checkCustomerPay(): boolean {

@@ -20,12 +20,8 @@ const DB_URI = "mongodb://127.0.0.1:27017/local";
 
 const MAX_TIMESTAMP = 8640000000000000;
 
-const RESERVED_DEFAULT_OWNER_ID = "000000000000000000000000";
-
-const ERRORS = {
-  SIGN_UP_FAILED: { TEXT: "CAN'T SIGN UP", CODE: 1 },
-};
-
+const RESERVED_DEFAULT_OWNER_ID = "633ed2b731c57889c7d60156";
+                                   
 export {
   ROBOT_BASE_POSITION,
   WAREHOUSE_SIZE,
@@ -35,5 +31,4 @@ export {
   DB_URI,
   MAX_TIMESTAMP,
   RESERVED_DEFAULT_OWNER_ID,
-  ERRORS,
 };

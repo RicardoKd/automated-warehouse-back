@@ -7,7 +7,7 @@ export default interface ICustomerServer {
   rentCells(
     quantityOfCells: number,
     rentEndDate: Date,
-    ownerId: Types.ObjectId,
+    ownerId: Types.ObjectId | string,
   ): Promise<boolean>;
   getCellContent(
     cellsIds: number[],
@@ -15,11 +15,11 @@ export default interface ICustomerServer {
   ): Promise<boolean>;
   putContentInCells(
     quantityOfCellsToBeUsed: number,
-    ownerId: Types.ObjectId,
+    ownerId: Types.ObjectId | string,
     cellsDescriptions: string[],
   ): Promise<boolean>;
   getCustomersCellsInfoOrNull(
     filter: object,
-    customerId: Types.ObjectId,
+    customerId: Types.ObjectId | string,
   ): Promise<ICell[] | null>;
 }
