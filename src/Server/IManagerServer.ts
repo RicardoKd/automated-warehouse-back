@@ -1,8 +1,8 @@
-import type ICell from "../Cell/ICell";
-import type IPosition from "../Types/IPosition";
+import type ICell from "../ts/Interfaces/ICell";
+import type Position from "../ts/types/Position";
 
 export default interface IManagerServer {
-  getRobotPosition(): IPosition;
+  getRobotPosition(): Position;
   getCellsInfoOrNull(filter: object): Promise<ICell[] | null>;
   logIn(email: string, password: string): Promise<boolean>;
 }

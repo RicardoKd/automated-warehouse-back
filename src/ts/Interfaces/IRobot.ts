@@ -1,7 +1,7 @@
-import type IPosition from "../Types/IPosition";
+import type Position from "../types/Position";
 
 export default interface IRobot {
-  getCurrentPosition(): IPosition;
+  getCurrentPosition(): Position;
   getKmDriven(): number;
   getCellContent(cellsIds: number[]): Promise<boolean>;
   getOneCellContent(cellId: number): Promise<boolean>;

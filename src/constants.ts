@@ -1,6 +1,6 @@
-import type IPosition from "./Types/IPosition";
+import type Position from "./ts/types/Position";
 
-const ROBOT_BASE_POSITION: IPosition = {
+const ROBOT_BASE_POSITION: Position = {
   row: 0,
   column: 0,
 };
@@ -21,7 +21,7 @@ const DB_URI = "mongodb://127.0.0.1:27017/local";
 const MAX_TIMESTAMP = 8640000000000000;
 
 const RESERVED_DEFAULT_OWNER_ID = "633ed2b731c57889c7d60156";
-                                   
+
 export {
   ROBOT_BASE_POSITION,
   WAREHOUSE_SIZE,

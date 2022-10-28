@@ -1,10 +1,10 @@
-import type IServiceResponse from "src/Types/IServiceResponse";
+import type ServiceResponse from "src/ts/types/ServiceResponse";
 
 const createServiceResponse = (
   success: boolean,
   status: number,
   errorMessage = "",
-): IServiceResponse => ({
+): ServiceResponse => ({
   success,
   status,
   errorMessage,

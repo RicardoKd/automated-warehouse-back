@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import { MAX_TIMESTAMP } from "../constants.js";
-import type ICell from "../Cell/ICell";
+import type ICell from "../ts/Interfaces/ICell";
 
 export const CellSchema = new Schema<ICell>(
   {

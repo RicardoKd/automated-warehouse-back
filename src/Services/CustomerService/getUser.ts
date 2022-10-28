@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import type IServiceResponse from "src/Types/IServiceResponse.js";
+import type ServiceResponse from "src/ts/types/ServiceResponse.js";
 import { DB_URI } from "../../constants.js";
-import type ICustomer from "../../Customer/ICustomer";
+import type ICustomer from "../../ts/Interfaces/ICustomer";
 import CustomerModel from "../../Schemas/customerSchema.js";
 import createServiceResponse from "../createServiceResponse.js";
 
@@ -11,7 +11,7 @@ const getUser = async ({
 }: {
   email: string;
   password: string;
-}): Promise<IServiceResponse> => {
+}): Promise<ServiceResponse> => {
   try {
     await mongoose.connect(DB_URI);
 

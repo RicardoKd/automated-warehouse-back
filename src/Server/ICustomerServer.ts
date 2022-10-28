@@ -1,5 +1,5 @@
 import type { Types } from "mongoose";
-import type ICell from "../Cell/ICell";
+import type ICell from "../ts/Interfaces/ICell";
 
 export default interface ICustomerServer {
   signUp(name: string, email: string, password: string): Promise<boolean>;

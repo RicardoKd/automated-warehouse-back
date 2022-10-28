@@ -3,11 +3,11 @@ import mongoose, { Types } from "mongoose";
 import fastify from "fastify";
 import cors from "@fastify/cors";
 
-import type IPosition from "../Types/IPosition";
+import type Position from "../ts/types/Position";
 
 import type IWarehouseServer from "./IWarehouseServer";
 
-import type ICell from "src/Cell/ICell";
+import type ICell from "src/ts/Interfaces/ICell";
 
 import Robot from "../Robot/Robot.js";
 
@@ -15,7 +15,7 @@ import CustomerModel from "../Schemas/customerSchema.js";
 import CellModel from "../Schemas/cellSchema.js";
 
 import { PORT, DB_URI, RESERVED_DEFAULT_OWNER_ID } from "../constants.js";
-import type ICustomer from "src/Customer/ICustomer";
+import type ICustomer from "src/ts/Interfaces/ICustomer";
 
 // import cellRoutes from "../routes/cellRoutes.js";
 import customerRoutes from "../routes/customerRoutes.js";
@@ -259,7 +259,7 @@ export default class WarehouseServer implements IWarehouseServer {
     return await this.getCellsInfoOrNull(filter);
   }
 
-  getRobotPosition(): IPosition {
+  getRobotPosition(): Position {
     return this.server.robot.getCurrentPosition();
   }
 

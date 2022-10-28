@@ -1,5 +1,5 @@
-import type IRobot from "./IRobot";
-import type IPosition from "../Types/IPosition";
+import type IRobot from "../ts/Interfaces/IRobot";
+import type Position from "../ts/types/Position";
 import {
   WAREHOUSE_SIZE,
   ROBOT_BASE_POSITION,
@@ -9,8 +9,8 @@ import {
 
 export default class Robot implements IRobot {
   private kmDriver: number;
-  private position: IPosition;
-  private cellPostitioningMatrix: IPosition[];
+  private position: Position;
+  private cellPostitioningMatrix: Position[];
 
   constructor() {
     this.kmDriver = 0;
@@ -175,12 +175,12 @@ export default class Robot implements IRobot {
     }
   }
 
-  private generateCellPostitioningMatrix(): IPosition[] {
+  private generateCellPostitioningMatrix(): Position[] {
     /**
      * Creates an array of IPosition objects for each cell.
      * The index of each object corresponds to Cell.id
      */
-    const cellPositions: IPosition[] = [];
+    const cellPositions: Position[] = [];
 
     let k = 1;
 
@@ -207,7 +207,7 @@ export default class Robot implements IRobot {
     );
   }
 
-  getCurrentPosition(): IPosition {
+  getCurrentPosition(): Position {
     return this.position;
   }
 

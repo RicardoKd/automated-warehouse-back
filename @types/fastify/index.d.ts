@@ -1,5 +1,5 @@
 import fastify from "fastify";
-import type IRobot from "src/Robot/IRobot";
+import type IRobot from "src/ts/Interfaces/IRobot";
 
 declare module "fastify" {
   export interface FastifyInstance<

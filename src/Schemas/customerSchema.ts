@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import type ICustomer from "../Customer/ICustomer";
+import type ICustomer from "../ts/Interfaces/ICustomer";
 
 export const CustomerSchema = new Schema<ICustomer>({
   _id: { type: Schema.Types.ObjectId, required: true },
