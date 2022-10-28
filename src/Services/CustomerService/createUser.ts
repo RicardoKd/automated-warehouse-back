@@ -37,7 +37,7 @@ const createUser = async ({
     return createServiceResponse(false, 500, String(error));
   }
 
-  return createServiceResponse(true, 200);
+  return createServiceResponse(true, 200, "New customer is saved");
 };
 
 export default createUser;

@@ -3,11 +3,11 @@ import type ServiceResponse from "src/ts/types/ServiceResponse";
 const createServiceResponse = (
   success: boolean,
   status: number,
-  errorMessage = "",
+  message = "",
 ): ServiceResponse => ({
   success,
   status,
-  errorMessage,
+  message,
 });
 
 export default createServiceResponse;

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify/types/instance";
-import UserController from "../Controllers/userController";
+import UserController from "../Controllers/userController.js";
 
 const rootRoute = "/customer/";
 

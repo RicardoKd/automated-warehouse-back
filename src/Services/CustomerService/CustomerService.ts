@@ -1,5 +1,5 @@
-import getUser from "./getUser";
-import createUser from "./createUser";
+import getUser from "./getUser.js";
+import createUser from "./createUser.js";
 
 const CustomerService = {
   getUser,

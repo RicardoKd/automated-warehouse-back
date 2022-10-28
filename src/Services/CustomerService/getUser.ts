@@ -30,7 +30,7 @@ const getUser = async ({
     return createServiceResponse(false, 500, String(error));
   }
 
-  return createServiceResponse(true, 200);
+  return createServiceResponse(true, 200, "Logged in succesfully");
 };
 
 export default getUser;

@@ -1,7 +1,7 @@
 type ServiceResponse = {
   success: boolean;
   status: number;
-  errorMessage?: string;
+  message?: string;
 };
 
 export default ServiceResponse;
