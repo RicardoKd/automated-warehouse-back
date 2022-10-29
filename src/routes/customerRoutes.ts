@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify/types/instance";
-import UserController from "../Controllers/userController.js";
+import CustomerController from "../Controllers/customerController.js";
 
 const rootRoute = "/customer/";
 
@@ -43,11 +43,11 @@ const options = {
 const customerRoutes = async (server: FastifyInstance) => {
   server.post<{
     Body: { name: string; email: string; password: string };
-  }>(routes.signUp, options.signUp, UserController.createUser);
+  }>(routes.signUp, options.signUp, CustomerController.createUser);
 
   server.post<{
     Body: { email: string; password: string };
-  }>(routes.logIn, options.logIn, UserController.getUser);
+  }>(routes.logIn, options.logIn, CustomerController.getUser);
 };
 
 export default customerRoutes;

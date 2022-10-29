@@ -39,9 +39,9 @@ const createUser = async (
   return reply.send({ message });
 };
 
-const UserController = {
+const CustomerController = {
   getUser,
   createUser,
 };
 
-export default UserController;
+export default CustomerController;
