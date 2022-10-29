@@ -5,18 +5,17 @@ import CustomerService from "../Services/CustomerService/CustomerService.js";
 const getUser = async (
   request: FastifyRequest & { body: { email: string; password: string } },
   reply: FastifyReply,
-) => {
-  const { success, status, message } = await CustomerService.getUser(
-    request.body,
-  );
+): Promise<FastifyReply> => {
+  const { success, status, errorMessage, payload } =
+    await CustomerService.getUser(request.body);
 
   reply.header("Content-Type", "application/json").status(status);
 
   if (success) {
-    return reply.send({ message });
+    return reply.send({ payload });
   }
 
-  return reply.send({ message });
+  return reply.send({ errorMessage });
 };
 
 // signup
@@ -25,18 +24,17 @@ const createUser = async (
     body: { name: string; email: string; password: string };
   },
   reply: FastifyReply,
-) => {
-  const { success, status, message } = await CustomerService.createUser(
-    request.body,
-  );
+): Promise<FastifyReply> => {
+  const { success, status, errorMessage, payload } =
+    await CustomerService.createUser(request.body);
 
   reply.header("Content-Type", "application/json").status(status);
 
   if (success) {
-    return reply.send({ message });
+    return reply.send({ payload });
   }
 
-  return reply.send({ message });
+  return reply.send({ errorMessage });
 };
 
 const CustomerController = {

@@ -1,11 +1,11 @@
-import type IRobot from "../ts/Interfaces/IRobot";
-import type Position from "../ts/types/Position";
 import {
-  WAREHOUSE_SIZE,
   ROBOT_BASE_POSITION,
   ROBOT_SPEED_MS_PER_M,
   ROBOT_SPEED_TO_LOAD_UNLOAD_CELL,
+  WAREHOUSE_SIZE,
 } from "../constants.js";
+import type IRobot from "../ts/Interfaces/IRobot";
+import type Position from "../ts/types/Position";
 
 export default class Robot implements IRobot {
   private kmDriver: number;
@@ -80,6 +80,14 @@ export default class Robot implements IRobot {
 
       return false;
     }
+  }
+
+  getCurrentPosition(): Position {
+    return this.position;
+  }
+
+  getKmDriven(): number {
+    return this.kmDriver;
   }
 
   private async driveToCell(cellId: number) {
@@ -205,13 +213,5 @@ export default class Robot implements IRobot {
     return new Promise((resolve) =>
       setTimeout(resolve, ROBOT_SPEED_TO_LOAD_UNLOAD_CELL),
     );
-  }
-
-  getCurrentPosition(): Position {
-    return this.position;
-  }
-
-  getKmDriven(): number {
-    return this.kmDriver;
   }
 }

@@ -34,10 +34,12 @@ const createUser = async ({
 
     await mongoose.disconnect();
   } catch (error) {
-    return createServiceResponse(false, 500, String(error));
+    return createServiceResponse(false, 409, String(error));
   }
 
-  return createServiceResponse(true, 200, "New customer is saved");
+  return createServiceResponse(true, 201, "", {
+    message: "New customer is saved",
+  });
 };
 
 export default createUser;

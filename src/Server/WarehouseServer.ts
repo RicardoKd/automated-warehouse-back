@@ -3,26 +3,26 @@ import mongoose, { Types } from "mongoose";
 import fastify from "fastify";
 import cors from "@fastify/cors";
 
-import type Position from "../ts/types/Position";
+// import type Position from "../ts/types/Position";
 
-import type IWarehouseServer from "./IWarehouseServer";
+// import type IWarehouseServer from "./IWarehouseServer";
 
 import type ICell from "src/ts/Interfaces/ICell";
 
 import Robot from "../Robot/Robot.js";
 
-import CustomerModel from "../Schemas/customerSchema.js";
+// import CustomerModel from "../Schemas/customerSchema.js";
 import CellModel from "../Schemas/cellSchema.js";
 
 import { PORT, DB_URI, RESERVED_DEFAULT_OWNER_ID } from "../constants.js";
-import type ICustomer from "src/ts/Interfaces/ICustomer";
+// import type ICustomer from "src/ts/Interfaces/ICustomer";
 
 // import cellRoutes from "../routes/cellRoutes.js";
 import customerRoutes from "../routes/customerRoutes.js";
 import generalRoutes from "../routes/generalRoutes.js";
 import robotRoutes from "../routes/robotRoutes.js";
 
-export default class WarehouseServer implements IWarehouseServer {
+export default class WarehouseServer {
   private server;
 
   // TODO: Queue for commands for the robot
@@ -55,63 +55,63 @@ export default class WarehouseServer implements IWarehouseServer {
     });
   }
 
-  async signUp(
-    name: string,
-    email: string,
-    password: string,
-  ): Promise<boolean> {
-    try {
-      await mongoose.connect(DB_URI);
+  // async signUp(
+  //   name: string,
+  //   email: string,
+  //   password: string,
+  // ): Promise<boolean> {
+  //   try {
+  //     await mongoose.connect(DB_URI);
 
-      if (await CustomerModel.findOne({ email })) {
-        throw new Error("user already exists. Sign up not possible");
-      }
+  //     if (await CustomerModel.findOne({ email })) {
+  //       throw new Error("user already exists. Sign up not possible");
+  //     }
 
-      const newCustomerId = this.generateOwnerId();
+  //     const newCustomerId = this.generateOwnerId();
 
-      const newCustomer = new CustomerModel({
-        _id: newCustomerId,
-        name,
-        email,
-        password,
-      });
+  //     const newCustomer = new CustomerModel({
+  //       _id: newCustomerId,
+  //       name,
+  //       email,
+  //       password,
+  //     });
 
-      await newCustomer.save();
-      await mongoose.disconnect();
+  //     await newCustomer.save();
+  //     await mongoose.disconnect();
 
-      console.log("New customer is saved");
+  //     console.log("New customer is saved");
 
-      return true;
-    } catch (error) {
-      console.error(error);
+  //     return true;
+  //   } catch (error) {
+  //     console.error(error);
 
-      return false;
-    }
-  }
+  //     return false;
+  //   }
+  // }
 
-  async logIn(email: string, password: string): Promise<boolean> {
-    try {
-      await mongoose.connect(DB_URI);
+  // async logIn(email: string, password: string): Promise<boolean> {
+  //   try {
+  //     await mongoose.connect(DB_URI);
 
-      const customer: ICustomer | null = await CustomerModel.findOne({ email });
+  //     const customer: ICustomer | null = await CustomerModel.findOne({ email });
 
-      await mongoose.disconnect();
+  //     await mongoose.disconnect();
 
-      if (!customer) {
-        throw new Error("User not found");
-      }
+  //     if (!customer) {
+  //       throw new Error("User not found");
+  //     }
 
-      if (customer.password !== password) {
-        throw new Error("Wrong password");
-      }
+  //     if (customer.password !== password) {
+  //       throw new Error("Wrong password");
+  //     }
 
-      return true;
-    } catch (error) {
-      console.error(error);
+  //     return true;
+  //   } catch (error) {
+  //     console.error(error);
 
-      return false;
-    }
-  }
+  //     return false;
+  //   }
+  // }
 
   async rentCells(
     quantityOfCells: number,
@@ -259,9 +259,9 @@ export default class WarehouseServer implements IWarehouseServer {
     return await this.getCellsInfoOrNull(filter);
   }
 
-  getRobotPosition(): Position {
-    return this.server.robot.getCurrentPosition();
-  }
+  // getRobotPosition(): Position {
+  //   return this.server.robot.getCurrentPosition();
+  // }
 
   private checkCustomerPay(): boolean {
     /**
@@ -271,13 +271,13 @@ export default class WarehouseServer implements IWarehouseServer {
     return Boolean(Math.round(Math.random()));
   }
 
-  private generateOwnerId(): Types.ObjectId {
-    let newOwnerId = new Types.ObjectId();
+  // private generateOwnerId(): Types.ObjectId {
+  //   let newOwnerId = new Types.ObjectId();
 
-    while (newOwnerId.toString() === RESERVED_DEFAULT_OWNER_ID) {
-      newOwnerId = new Types.ObjectId();
-    }
+  //   while (newOwnerId.toString() === RESERVED_DEFAULT_OWNER_ID) {
+  //     newOwnerId = new Types.ObjectId();
+  //   }
 
-    return newOwnerId;
-  }
+  //   return newOwnerId;
+  // }
 }

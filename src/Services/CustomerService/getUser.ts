@@ -27,10 +27,12 @@ const getUser = async ({
       throw new Error("Wrong password");
     }
   } catch (error) {
-    return createServiceResponse(false, 500, String(error));
+    return createServiceResponse(false, 401, String(error));
   }
 
-  return createServiceResponse(true, 200, "Logged in succesfully");
+  return createServiceResponse(true, 200, "", {
+    message: "Logged in succesfully",
+  });
 };
 
 export default getUser;

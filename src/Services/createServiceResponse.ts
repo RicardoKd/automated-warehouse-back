@@ -2,12 +2,14 @@ import type ServiceResponse from "src/ts/types/ServiceResponse";
 
 const createServiceResponse = (
   success: boolean,
-  status: number,
-  message = "",
+  status = 500,
+  errorMessage = "No error desription",
+  payload?: object,
 ): ServiceResponse => ({
   success,
   status,
-  message,
+  errorMessage,
+  payload,
 });
 
 export default createServiceResponse;
