@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify/types/instance";
-import RobotController from "src/Controllers/robotControllers";
+import RobotController from "../Controllers/robotController.js";
 
 const rootRoute = "/robot/";
 

@@ -1,7 +1,6 @@
-import type IWarehouseServer from "./Server/IWarehouseServer";
 import WarehouseServer from "./Server/WarehouseServer.js";
 
-const srv: IWarehouseServer = new WarehouseServer();
+new WarehouseServer();
 
 // srv.signUp("Babushka", "babuska@gmail.com", "babysiya").then((data) => {
 //   console.log("data=" + data);

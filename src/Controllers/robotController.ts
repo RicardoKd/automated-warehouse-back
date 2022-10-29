@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import RobotService from "src/Services/RobotService/RobotService";
+import RobotService from "../Services/RobotService/RobotService.js";
 
 const getPosition = (
   request: FastifyRequest,
