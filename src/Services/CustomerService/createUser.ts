@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import type ServiceResponse from "src/ts/types/ServiceResponse.js";
 import { DB_URI } from "../../constants.js";
 import CustomerModel from "../../Schemas/customerSchema.js";
+import type ServiceResponse from "../../ts/types/ServiceResponse.js";
 import createServiceResponse from "../createServiceResponse.js";
 import generateOwnerId from "../generateOwnerId.js";
 

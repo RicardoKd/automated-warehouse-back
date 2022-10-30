@@ -1,76 +1,93 @@
-// import type { FastifyInstance } from "fastify/types/instance";
+import type { FastifyInstance } from "fastify/types/instance";
+import CellController from "../Controllers/CellController.js";
 
-// const rootRoute = "/cells/";
+const rootRoute = "/cells/";
 
-// const routes = {
-//   all: rootRoute,
-//   putContentInCells: rootRoute + "putContentInCells",
-//   rent: rootRoute + "rent",
-// };
+const routes = {
+  get: rootRoute,
+  rent: rootRoute + "rent",
+  putPhysicalCell: rootRoute + "putPhysicalCell",
+  getPhysicalCell: rootRoute + "getPhysicalCell",
+};
 
-// const options = {
-//   putContentInCells: {
-//     schema: {
-//       body: {
-//         type: "object",
-//         required: ["quantityOfCellsToBeUsed", "ownerId", "cellsDescriptions"],
-//         properties: {
-//           quantityOfCellsToBeUsed: { type: "number" },
-//           ownerId: { type: "string" },
-//           cellsDescriptions: { type: "array" },
-//         },
-//       },
-//     },
-//   },
-// };
+const options = {
+  rent: {
+    schema: {
+      body: {
+        type: "object",
+        required: ["ownerId", "rentEndDate", "quantityOfCells"],
+        properties: {
+          ownerId: { type: "string" },
+          rentEndDate: { type: "string" },
+          quantityOfCells: { type: "number" },
+        },
+      },
+    },
+  },
+  putPhysicalCell: {
+    schema: {
+      body: {
+        type: "object",
+        required: ["ownerId", "cellsDescriptions", "quantityOfCellsToBeUsed"],
+        properties: {
+          ownerId: { type: "string" },
+          cellsDescriptions: { type: "array" },
+          quantityOfCellsToBeUsed: { type: "number" },
+        },
+      },
+    },
+  },
+  getPhysicalCell: {
+    schema: {
+      body: {
+        type: "object",
+        required: ["cellsIds", "ownerId"],
+        properties: {
+          cellsIds: { type: "array" },
+          ownerId: { type: "string" },
+        },
+      },
+    },
+  },
+};
 
-// /**
-//  * A plugin that provide encapsulated routes
-//  * @param {FastifyInstance} fastify encapsulated fastify instance
-//  */
-// const cellRoutes = async (server: FastifyInstance) => {
-//   server.post<{
-//     Body: {
-//       quantityOfCellsToBeUsed: number;
-//       ownerId: string;
-//       cellsDescriptions: [];
-//     };
-//   }>(
-//     routes.putContentInCells,
-//     options.putContentInCells,
-//     async (request, reply) => {
-//       const { quantityOfCellsToBeUsed, ownerId, cellsDescriptions } =
-//         request.body;
+/**
+ * A plugin that provide encapsulated routes
+ * @param {FastifyInstance} fastify encapsulated fastify instance
+ */
+const cellRoutes = async (server: FastifyInstance) => {
+  server.get(routes.get, CellController.getCells);
 
-//       await this.putContentInCells(
-//         quantityOfCellsToBeUsed,
-//         ownerId,
-//         cellsDescriptions,
-//       );
+  server.post<{
+    Body: {
+      quantityOfCellsToBeUsSed: number;
+      rentEndDate: string;
+      ownerId: string;
+    };
+  }>(routes.rent, CellController.rentCells);
 
-//       reply.status(200).send({ success: true });
-//     },
-//   );
+  server.post<{
+    Body: {
+      ownerId: string;
+      cellsDescriptions: [];
+      quantityOfCellsToBeUsed: number;
+    };
+  }>(
+    routes.putPhysicalCell,
+    options.putPhysicalCell,
+    CellController.putPhysicalCells,
+  );
 
-//   server.post<{
-//     Body: {
-//       quantityOfCellsToBeUsed: number;
-//       rentEndDate: Date;
-//       ownerId: string;
-//     };
-//   }>(routes.rent, (request, reply) => {
-//     const { quantityOfCellsToBeUsed, rentEndDate, ownerId } = request.body;
+  server.post<{
+    Body: {
+      ownerId: string;
+      cellsIds: [];
+    };
+  }>(
+    routes.getPhysicalCell,
+    options.getPhysicalCell,
+    CellController.getPhysicalCells,
+  );
+};
 
-//     rentCells(quantityOfCellsToBeUsed, rentEndDate, ownerId);
-
-//     reply.status(200).send({ success: true });
-//   });
-
-//   server.get(routes.all, async (request, reply) => {
-//     const result = await this.getCellsInfoOrNull({});
-
-//     reply.status(200).send({ success: true, result });
-//   });
-// };
-
-// export default cellRoutes;
+export default cellRoutes;

@@ -9,7 +9,7 @@ const getPosition = (robot: IRobot): ServiceResponse => {
     robotPosition = robot.getCurrentPosition();
 
     if (!robotPosition) {
-      throw new Error("Robot position lost");
+      return createServiceResponse(false, 503, "Robot position lost");
     }
   } catch (error) {
     return createServiceResponse(false, 503, String(error));
