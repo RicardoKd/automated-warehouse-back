@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import type IRobot from "../../ts/Interfaces/IRobot";
 import { DB_URI } from "../../constants.js";
 import CellModel from "../../Schemas/cellSchema.js";
-import type ICell from "../../ts/Interfaces/ICell";
+import type IRobot from "../../ts/Interfaces/IRobot";
+import type { PutPhysicalCellsReqBody } from "../../ts/types/CellRequestBody.js";
 import type ServiceResponse from "../../ts/types/ServiceResponse";
 import createServiceResponse from "../createServiceResponse.js";
 
@@ -11,11 +11,7 @@ const putPhysicalCell = async (
     ownerId,
     cellsDescriptions,
     quantityOfCellsToBeUsed,
-  }: {
-    ownerId: string;
-    cellsDescriptions: [];
-    quantityOfCellsToBeUsed: number;
-  },
+  }: PutPhysicalCellsReqBody,
   robot: IRobot,
 ): Promise<ServiceResponse> => {
   try {
@@ -29,7 +25,7 @@ const putPhysicalCell = async (
 
     await mongoose.connect(DB_URI);
 
-    const rentedCells: ICell[] | null = await CellModel.find({
+    const rentedCells = await CellModel.find({
       ownerId,
     }).lean();
 

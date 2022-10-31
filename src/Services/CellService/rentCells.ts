@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import { DB_URI, RESERVED_DEFAULT_OWNER_ID } from "../../constants.js";
 import CellModel from "../../Schemas/cellSchema.js";
-import type ICell from "../../ts/Interfaces/ICell";
+import CustomerModel from "../../Schemas/customerSchema.js";
+import type { RentCellsReqBody } from "../../ts/types/CellRequestBody.js";
 import type ServiceResponse from "../../ts/types/ServiceResponse";
 import checkCustomerPay from "../checkCustomerPay.js";
 import createServiceResponse from "../createServiceResponse.js";
@@ -10,21 +11,21 @@ const rentCells = async ({
   ownerId,
   rentEndDate,
   quantityOfCellsToBeUsed,
-}: {
-  ownerId: string;
-  rentEndDate: string;
-  quantityOfCellsToBeUsed: number;
-}): Promise<ServiceResponse> => {
+}: RentCellsReqBody): Promise<ServiceResponse> => {
   console.log(quantityOfCellsToBeUsed, ownerId);
 
   try {
-    if (checkCustomerPay()) {
+    if (!checkCustomerPay()) {
       return createServiceResponse(false, 500, "Can`t pay!");
     }
 
     await mongoose.connect(DB_URI);
 
-    const freeCells: ICell[] | null = await CellModel.find({
+    if (!(await CustomerModel.findById(ownerId))) {
+      return createServiceResponse(false, 500, `User doesn't exist`);
+    }
+
+    const freeCells = await CellModel.find({
       ownerId: RESERVED_DEFAULT_OWNER_ID,
     }).lean();
 
@@ -37,12 +38,11 @@ const rentCells = async ({
     }
 
     for (let i = 0; i < quantityOfCellsToBeUsed; i++) {
-      console.log(`times added: ${i}`);
       await CellModel.findOneAndUpdate(
         { id: freeCells[i]?.id },
         {
           ownerId,
-          rentEndDate,
+          rentEndDate: new Date(rentEndDate),
         },
       );
     }

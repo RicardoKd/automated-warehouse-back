@@ -1,19 +1,13 @@
 import mongoose from "mongoose";
-import type IRobot from "../../ts/Interfaces/IRobot";
 import { DB_URI } from "../../constants.js";
 import CellModel from "../../Schemas/cellSchema.js";
-import type ICell from "../../ts/Interfaces/ICell";
+import type IRobot from "../../ts/Interfaces/IRobot";
+import type { GetPhysicalCellsReqBody } from "../../ts/types/CellRequestBody.js";
 import type ServiceResponse from "../../ts/types/ServiceResponse";
 import createServiceResponse from "../createServiceResponse.js";
 
 const getPhysicalCells = async (
-  {
-    ownerId,
-    cellsIds,
-  }: {
-    ownerId: string;
-    cellsIds: [];
-  },
+  { ownerId, cellsIds }: GetPhysicalCellsReqBody,
   robot: IRobot,
 ): Promise<ServiceResponse> => {
   try {
@@ -22,10 +16,10 @@ const getPhysicalCells = async (
     cellsIds.forEach(async (cellId) => {
       await robot.getOneCellContent(cellId);
 
-      const cell: ICell | null = await CellModel.findOneAndUpdate(
+      const cell = await CellModel.findOneAndUpdate(
         { id: cellId, ownerId: ownerId },
         { description: "None", isOccupied: false },
-      ).lean(); // is lean() needed here ???
+      );
 
       if (!cell) {
         throw new Error(`Cell not found. Invalid cellId: ${cellId}`);

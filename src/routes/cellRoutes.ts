@@ -1,24 +1,28 @@
 import type { FastifyInstance } from "fastify/types/instance";
+import type {
+  GetPhysicalCellsReqBody,
+  PutPhysicalCellsReqBody,
+  RentCellsReqBody,
+} from "../ts/types/CellRequestBody.js";
 import CellController from "../Controllers/CellController.js";
 
 const rootRoute = "/cells/";
 
 const routes = {
   get: rootRoute,
-  rent: rootRoute + "rent",
-  putPhysicalCell: rootRoute + "putPhysicalCell",
   getPhysicalCell: rootRoute + "getPhysicalCell",
+  putPhysicalCell: rootRoute + "putPhysicalCell",
+  rent: rootRoute + "rent",
 };
 
 const options = {
-  rent: {
+  getPhysicalCell: {
     schema: {
       body: {
         type: "object",
-        required: ["quantityOfCellsToBeUsed", "rentEndDate", "ownerId"],
+        required: ["cellsIds", "ownerId"],
         properties: {
-          quantityOfCellsToBeUsed: { type: "number" },
-          rentEndDate: { type: "string" },
+          cellsIds: { type: "array" },
           ownerId: { type: "string" },
         },
       },
@@ -37,13 +41,14 @@ const options = {
       },
     },
   },
-  getPhysicalCell: {
+  rent: {
     schema: {
       body: {
         type: "object",
-        required: ["cellsIds", "ownerId"],
+        required: ["quantityOfCellsToBeUsed", "rentEndDate", "ownerId"],
         properties: {
-          cellsIds: { type: "array" },
+          quantityOfCellsToBeUsed: { type: "number" },
+          rentEndDate: { type: "string" },
           ownerId: { type: "string" },
         },
       },
@@ -59,19 +64,11 @@ const cellRoutes = async (server: FastifyInstance) => {
   server.get(routes.get, CellController.getCells);
 
   server.post<{
-    Body: {
-      quantityOfCellsToBeUsed: number;
-      rentEndDate: string;
-      ownerId: string;
-    };
+    Body: RentCellsReqBody;
   }>(routes.rent, CellController.rentCells);
 
   server.post<{
-    Body: {
-      ownerId: string;
-      cellsDescriptions: [];
-      quantityOfCellsToBeUsed: number;
-    };
+    Body: PutPhysicalCellsReqBody;
   }>(
     routes.putPhysicalCell,
     options.putPhysicalCell,
@@ -79,10 +76,7 @@ const cellRoutes = async (server: FastifyInstance) => {
   );
 
   server.post<{
-    Body: {
-      ownerId: string;
-      cellsIds: [];
-    };
+    Body: GetPhysicalCellsReqBody;
   }>(
     routes.getPhysicalCell,
     options.getPhysicalCell,

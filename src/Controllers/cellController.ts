@@ -1,12 +1,18 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import CellService from "../Services/CellService/CellService.js";
+import type {
+  GetPhysicalCellsReqBody,
+  PutPhysicalCellsReqBody,
+  RentCellsReqBody,
+} from "../ts/types/CellRequestBody.js";
 
 const getCells = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<FastifyReply> => {
-  const { success, status, errorMessage, payload } =
-    await CellService.getCells({}); // TODO: pass query here
+  const { success, status, errorMessage, payload } = await CellService.getCells(
+    {},
+  ); // TODO: pass query here
 
   reply.header("Content-Type", "application/json").status(status);
 
@@ -19,16 +25,10 @@ const getCells = async (
 
 const rentCells = async (
   request: FastifyRequest & {
-    body: {
-      ownerId: string;
-      rentEndDate: string;
-      quantityOfCellsToBeUsed: number;
-    };
+    body: RentCellsReqBody;
   },
   reply: FastifyReply,
 ): Promise<FastifyReply> => {
-  console.log(request.body.quantityOfCellsToBeUsed, request.body.ownerId);
-
   const { success, status, errorMessage, payload } =
     await CellService.rentCells(request.body);
 
@@ -43,11 +43,7 @@ const rentCells = async (
 
 const putPhysicalCells = async (
   request: FastifyRequest & {
-    body: {
-      ownerId: string;
-      cellsDescriptions: [];
-      quantityOfCellsToBeUsed: number;
-    };
+    body: PutPhysicalCellsReqBody;
   },
   reply: FastifyReply,
 ): Promise<FastifyReply> => {
@@ -65,7 +61,7 @@ const putPhysicalCells = async (
 
 const getPhysicalCells = async (
   request: FastifyRequest & {
-    body: { ownerId: string; cellsIds: [] };
+    body: GetPhysicalCellsReqBody;
   },
   reply: FastifyReply,
 ): Promise<FastifyReply> => {
