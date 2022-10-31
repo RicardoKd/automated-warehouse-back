@@ -9,7 +9,7 @@ import type {
 
 /**
  * A plugin that provide encapsulated routes
- * @param {FastifyInstance} fastify encapsulated fastify instance
+ * @param {FastifyInstance} server encapsulated fastify instance
  */
 const cellRoutes = async (server: FastifyInstance) => {
   server.get(CELL_ROUTES.GET, CellController.getCells);
