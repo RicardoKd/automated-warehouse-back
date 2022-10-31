@@ -22,11 +22,13 @@ const rentCells = async (
     body: {
       ownerId: string;
       rentEndDate: string;
-      quantityOfCellsToBeUsSed: number;
+      quantityOfCellsToBeUsed: number;
     };
   },
   reply: FastifyReply,
 ): Promise<FastifyReply> => {
+  console.log(request.body.quantityOfCellsToBeUsed, request.body.ownerId);
+
   const { success, status, errorMessage, payload } =
     await CellService.rentCells(request.body);
 

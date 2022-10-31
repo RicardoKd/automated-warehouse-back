@@ -15,11 +15,11 @@ const options = {
     schema: {
       body: {
         type: "object",
-        required: ["ownerId", "rentEndDate", "quantityOfCells"],
+        required: ["quantityOfCellsToBeUsed", "rentEndDate", "ownerId"],
         properties: {
-          ownerId: { type: "string" },
+          quantityOfCellsToBeUsed: { type: "number" },
           rentEndDate: { type: "string" },
-          quantityOfCells: { type: "number" },
+          ownerId: { type: "string" },
         },
       },
     },
@@ -60,7 +60,7 @@ const cellRoutes = async (server: FastifyInstance) => {
 
   server.post<{
     Body: {
-      quantityOfCellsToBeUsSed: number;
+      quantityOfCellsToBeUsed: number;
       rentEndDate: string;
       ownerId: string;
     };

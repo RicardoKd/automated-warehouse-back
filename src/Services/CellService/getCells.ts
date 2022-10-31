@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import { DB_URI } from "../../constants.js";
-import CellModel from "../../Schemas/cellSchema";
+import CellModel from "../../Schemas/cellSchema.js";
 import type ICell from "../../ts/Interfaces/ICell";
-import type ServiceResponse from "../../ts/types/ServiceResponse.js";
+import type ServiceResponse from "../../ts/types/ServiceResponse";
 import createServiceResponse from "../createServiceResponse.js";
 
 const getCells = async (filter: object): Promise<ServiceResponse> => {

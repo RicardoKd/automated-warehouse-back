@@ -1,5 +1,6 @@
 import cors from "@fastify/cors";
 import fastify from "fastify";
+import { PORT } from "../constants.js";
 import Robot from "../Robot/Robot.js";
 import cellRoutes from "../routes/cellRoutes.js";
 import customerRoutes from "../routes/customerRoutes.js";

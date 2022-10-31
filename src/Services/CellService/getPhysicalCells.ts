@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import type IRobot from "../../ts/Interfaces/IRobot.js";
+import type IRobot from "../../ts/Interfaces/IRobot";
 import { DB_URI } from "../../constants.js";
-import CellModel from "../../Schemas/cellSchema";
+import CellModel from "../../Schemas/cellSchema.js";
 import type ICell from "../../ts/Interfaces/ICell";
-import type ServiceResponse from "../../ts/types/ServiceResponse.js";
+import type ServiceResponse from "../../ts/types/ServiceResponse";
 import createServiceResponse from "../createServiceResponse.js";
 
 const getPhysicalCells = async (
