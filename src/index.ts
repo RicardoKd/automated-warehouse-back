@@ -1,6 +1,6 @@
-import WarehouseServer from "./Server/WarehouseServer.js";
+import Server from "./Server/Server.js";
 
-new WarehouseServer();
+Server();
 
 // srv.signUp("Babushka", "babuska@gmail.com", "babysiya").then((data) => {
 //   console.log("data=" + data);
