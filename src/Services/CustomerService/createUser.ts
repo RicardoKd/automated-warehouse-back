@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { DB_URI } from "../../constants.js";
 import CustomerModel from "../../Schemas/customerSchema.js";
+import type { SignUpReqBody } from "../../ts/types/CustomerRequestBody.js";
 import type ServiceResponse from "../../ts/types/ServiceResponse.js";
 import createServiceResponse from "../createServiceResponse.js";
 import generateOwnerId from "../generateOwnerId.js";
@@ -9,11 +10,7 @@ const createUser = async ({
   name,
   email,
   password,
-}: {
-  name: string;
-  email: string;
-  password: string;
-}): Promise<ServiceResponse> => {
+}: SignUpReqBody): Promise<ServiceResponse> => {
   try {
     await mongoose.connect(DB_URI);
 

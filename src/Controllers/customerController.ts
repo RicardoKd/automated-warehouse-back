@@ -1,9 +1,12 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import CustomerService from "../Services/CustomerService/CustomerService.js";
+import type {
+  LogInReqBody,
+  SignUpReqBody
+} from "../ts/types/CustomerRequestBody.js";
 
-// login
 const getUser = async (
-  request: FastifyRequest & { body: { email: string; password: string } },
+  request: FastifyRequest & { body: LogInReqBody },
   reply: FastifyReply,
 ): Promise<FastifyReply> => {
   const { success, status, errorMessage, payload } =
@@ -18,10 +21,9 @@ const getUser = async (
   return reply.send({ errorMessage });
 };
 
-// signup
 const createUser = async (
   request: FastifyRequest & {
-    body: { name: string; email: string; password: string };
+    body: SignUpReqBody;
   },
   reply: FastifyReply,
 ): Promise<FastifyReply> => {
