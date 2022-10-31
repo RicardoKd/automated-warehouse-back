@@ -1,85 +1,36 @@
 import type { FastifyInstance } from "fastify/types/instance";
+import { CELL_REQUEST_OPTIONS, CELL_ROUTES } from "../constants.js";
+import CellController from "../Controllers/CellController.js";
 import type {
   GetPhysicalCellsReqBody,
   PutPhysicalCellsReqBody,
   RentCellsReqBody,
 } from "../ts/types/CellRequestBody.js";
-import CellController from "../Controllers/CellController.js";
-
-const rootRoute = "/cells/";
-
-const routes = {
-  get: rootRoute,
-  getPhysicalCell: rootRoute + "getPhysicalCell",
-  putPhysicalCell: rootRoute + "putPhysicalCell",
-  rent: rootRoute + "rent",
-};
-
-const options = {
-  getPhysicalCell: {
-    schema: {
-      body: {
-        type: "object",
-        required: ["cellsIds", "ownerId"],
-        properties: {
-          cellsIds: { type: "array" },
-          ownerId: { type: "string" },
-        },
-      },
-    },
-  },
-  putPhysicalCell: {
-    schema: {
-      body: {
-        type: "object",
-        required: ["ownerId", "cellsDescriptions", "quantityOfCellsToBeUsed"],
-        properties: {
-          ownerId: { type: "string" },
-          cellsDescriptions: { type: "array" },
-          quantityOfCellsToBeUsed: { type: "number" },
-        },
-      },
-    },
-  },
-  rent: {
-    schema: {
-      body: {
-        type: "object",
-        required: ["quantityOfCellsToBeUsed", "rentEndDate", "ownerId"],
-        properties: {
-          quantityOfCellsToBeUsed: { type: "number" },
-          rentEndDate: { type: "string" },
-          ownerId: { type: "string" },
-        },
-      },
-    },
-  },
-};
 
 /**
  * A plugin that provide encapsulated routes
  * @param {FastifyInstance} fastify encapsulated fastify instance
  */
 const cellRoutes = async (server: FastifyInstance) => {
-  server.get(routes.get, CellController.getCells);
+  server.get(CELL_ROUTES.GET, CellController.getCells);
 
   server.post<{
     Body: RentCellsReqBody;
-  }>(routes.rent, CellController.rentCells);
+  }>(CELL_ROUTES.RENT, CELL_REQUEST_OPTIONS.RENT, CellController.rentCells);
 
   server.post<{
     Body: PutPhysicalCellsReqBody;
   }>(
-    routes.putPhysicalCell,
-    options.putPhysicalCell,
+    CELL_ROUTES.PUT_PHYSICAL_CELL,
+    CELL_REQUEST_OPTIONS.PUT_PHYSICAL_CELL,
     CellController.putPhysicalCells,
   );
 
   server.post<{
     Body: GetPhysicalCellsReqBody;
   }>(
-    routes.getPhysicalCell,
-    options.getPhysicalCell,
+    CELL_ROUTES.GET_PHYSICAL_CELL,
+    CELL_REQUEST_OPTIONS.GET_PHYSICAL_CELL,
     CellController.getPhysicalCells,
   );
 };

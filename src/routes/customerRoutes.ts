@@ -1,44 +1,10 @@
 import type { FastifyInstance } from "fastify/types/instance";
+import { CUSTOMER_REQUEST_OPTIONS, CUSTOMER_ROUTES } from "../constants.js";
+import CustomerController from "../Controllers/CustomerController.js";
 import type {
   LogInReqBody,
   SignUpReqBody,
 } from "../ts/types/CustomerRequestBody.js";
-import CustomerController from "../Controllers/CustomerController.js";
-
-const rootRoute = "/customer/";
-
-const routes = {
-  logIn: rootRoute + "logIn",
-  signUp: rootRoute + "signUp",
-};
-
-const options = {
-  signUp: {
-    schema: {
-      body: {
-        type: "object",
-        required: ["name", "email", "password"],
-        properties: {
-          name: { type: "string" },
-          email: { type: "string" },
-          password: { type: "string" },
-        },
-      },
-    },
-  },
-  logIn: {
-    schema: {
-      body: {
-        type: "object",
-        required: ["email", "password"],
-        properties: {
-          email: { type: "string" },
-          password: { type: "string" },
-        },
-      },
-    },
-  },
-};
 
 /**
  * A plugin that provide encapsulated routes
@@ -47,11 +13,19 @@ const options = {
 const customerRoutes = async (server: FastifyInstance) => {
   server.post<{
     Body: LogInReqBody;
-  }>(routes.logIn, options.logIn, CustomerController.getUser);
+  }>(
+    CUSTOMER_ROUTES.LOG_IN,
+    CUSTOMER_REQUEST_OPTIONS.LOG_IN,
+    CustomerController.getUser,
+  );
 
   server.post<{
     Body: SignUpReqBody;
-  }>(routes.signUp, options.signUp, CustomerController.createUser);
+  }>(
+    CUSTOMER_ROUTES.SIGN_UP,
+    CUSTOMER_REQUEST_OPTIONS.SIGN_UP,
+    CustomerController.createUser,
+  );
 };
 
 export default customerRoutes;
