@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import type ICell from "../ts/Interfaces/ICell.js";
 import CellService from "../Services/CellService/CellService.js";
 import type {
   GetPhysicalCellsReqBody,
@@ -10,9 +11,10 @@ const getCells = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<FastifyReply> => {
+  // FIXME: request.query as ICell — make ICell type of request.query, and dont pass it with "as" keyword
   const { success, status, errorMessage, payload } = await CellService.getCells(
-    {},
-  ); // TODO: pass query here
+    request.query as ICell,
+  );
 
   reply.header("Content-Type", "application/json").status(status);
 

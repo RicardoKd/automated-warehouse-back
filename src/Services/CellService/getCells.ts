@@ -5,13 +5,13 @@ import type ICell from "../../ts/Interfaces/ICell";
 import type ServiceResponse from "../../ts/types/ServiceResponse";
 import createServiceResponse from "../createServiceResponse.js";
 
-const getCells = async (filter: object): Promise<ServiceResponse> => {
+const getCells = async (filter: ICell): Promise<ServiceResponse> => {
   let queryResult: ICell[];
 
   try {
     await mongoose.connect(DB_URI);
 
-    queryResult = await CellModel.find(filter).lean();
+    queryResult = await CellModel.find({ ...filter}).lean();
 
     await mongoose.disconnect();
   } catch (error) {

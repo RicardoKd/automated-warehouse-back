@@ -23,25 +23,26 @@ const MAX_TIMESTAMP = 8640000000000000;
 const RESERVED_DEFAULT_OWNER_ID = "633ed2b731c57889c7d60156";
 
 const ROOT_ROUTES = Object.freeze({
-  CUSTOMER: "/customer/",
-  CELL: "/cells/",
-  ROBOT: "/robot/",
+  CUSTOMER: "/customer",
+  CELL: "/cells",
+  ROBOT: "/robot",
 });
 
 const CUSTOMER_ROUTES = Object.freeze({
-  LOG_IN: ROOT_ROUTES.CUSTOMER + "logIn",
-  SIGN_UP: ROOT_ROUTES.CUSTOMER + "signUp",
+  LOG_IN: ROOT_ROUTES.CUSTOMER + "/logIn",
+  SIGN_UP: ROOT_ROUTES.CUSTOMER + "/signUp",
 });
 
 const CELL_ROUTES = Object.freeze({
-  GET: String(ROOT_ROUTES.CELL),
-  GET_PHYSICAL_CELL: ROOT_ROUTES.CELL + "getPhysicalCell",
-  PUT_PHYSICAL_CELL: ROOT_ROUTES.CELL + "putPhysicalCell",
-  RENT: ROOT_ROUTES.CELL + "rent",
+  GET:
+    String(ROOT_ROUTES.CELL) + ":id:ownerId:description:isOccupied:rentEndDate",
+  GET_PHYSICAL_CELL: ROOT_ROUTES.CELL + "/getPhysicalCell",
+  PUT_PHYSICAL_CELL: ROOT_ROUTES.CELL + "/putPhysicalCell",
+  RENT: ROOT_ROUTES.CELL + "/rent",
 });
 
 const ROBOT_ROUTES = Object.freeze({
-  POSITION: ROOT_ROUTES.ROBOT + "position",
+  POSITION: ROOT_ROUTES.ROBOT + "/position",
 });
 
 const CUSTOMER_REQUEST_OPTIONS = Object.freeze({
