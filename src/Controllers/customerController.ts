@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import CustomerService from "../Services/CustomerService/CustomerService.js";
 import type {
   LogInReqBody,
-  SignUpReqBody
+  SignUpReqBody,
 } from "../ts/types/CustomerRequestBody.js";
 
 const getUser = async (
