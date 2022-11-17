@@ -20,7 +20,7 @@ const getCells = async (filter: ICell): Promise<ServiceResponse> => {
 
   return createServiceResponse(true, 200, "", {
     queryResult,
-    message: "Putting stuff into cells successfully",
+    message: "getting cells successfully",
   });
 };
 
