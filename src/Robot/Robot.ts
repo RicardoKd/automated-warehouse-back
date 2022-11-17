@@ -133,7 +133,7 @@ export default class Robot implements IRobot {
 
   private async moveForward(): Promise<void> {
     try {
-      if (this.position.row <= 0) {
+      if (this.position.row >= WAREHOUSE_SIZE.ROWS) {
         throw new Error("Robot can't move forward");
       }
 
