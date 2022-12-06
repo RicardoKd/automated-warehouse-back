@@ -7,38 +7,34 @@ import type ServiceResponse from "../../ts/types/ServiceResponse";
 import createServiceResponse from "../createServiceResponse.js";
 
 const getPhysicalCells = async (
-  { ownerId, cellsIds }: GetPhysicalCellsReqBody,
+  { cellsIds }: GetPhysicalCellsReqBody,
   robot: IRobot,
 ): Promise<ServiceResponse> => {
   try {
-    await mongoose.connect(DB_URI);
+    await Promise.all(
+      cellsIds.map(async (cellId) => {
+        await mongoose.connect(DB_URI);
+        const cell = await CellModel.findOneAndUpdate(
+          { id: cellId },
+          { description: "None", isOccupied: false },
+        );
 
-    cellsIds.forEach(async (cellId) => {
-      await robot.getOneCellContent(cellId);
+        await robot.getOneCellContent(cellId);
 
-      const cell = await CellModel.findOneAndUpdate(
-        { id: cellId, ownerId: ownerId },
-        { description: "None", isOccupied: false },
-      );
+        if (!cell) {
+          throw new Error(`Cell not found. Invalid cellId: ${cellId}`);
+        }
 
-      if (!cell) {
-        throw new Error(`Cell not found. Invalid cellId: ${cellId}`);
-        // return createServiceResponse(
-        //   false,
-        //   500,
-        //   `Cell not found. Invalid cellId: ${cellId}`
-        // );
-      }
+        await mongoose.disconnect();
+      }),
+    );
+
+    return createServiceResponse(true, 200, "", {
+      message: "Getting stuff from cells successfully",
     });
-
-    await mongoose.disconnect();
   } catch (error) {
     return createServiceResponse(false, 500, String(error));
   }
-
-  return createServiceResponse(true, 200, "", {
-    message: "Getting stuff from cells successfully",
-  });
 };
 
 export default getPhysicalCells;
