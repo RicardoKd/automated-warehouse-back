@@ -190,15 +190,19 @@ export default class Robot implements IRobot {
      */
     const cellPositions: Position[] = [];
 
-    let k = 1;
+    let cellId = 0;
 
     /*
-      j starts with 1, because the first column (col[0]) is reserved for the robot movement
+      columnIndex starts with 1, because the first column (col[0]) is reserved for the robot movement
     */
-    for (let i = 0; i < WAREHOUSE_SIZE.ROWS; i++) {
-      for (let j = 1; j <= WAREHOUSE_SIZE.COLUMNS; j++) {
-        cellPositions[k] = { row: i, column: j };
-        k++;
+    for (let rowIndex = 0; rowIndex < WAREHOUSE_SIZE.ROWS; rowIndex++) {
+      for (
+        let columnIndex = 1;
+        columnIndex < WAREHOUSE_SIZE.COLUMNS;
+        columnIndex++
+      ) {
+        cellPositions[cellId] = { row: rowIndex, column: columnIndex };
+        cellId++;
       }
     }
 
@@ -206,7 +210,11 @@ export default class Robot implements IRobot {
   }
 
   private timeToCrossOneCell() {
-    return new Promise((resolve) => setTimeout(resolve, ROBOT_SPEED_MS_PER_M));
+    return new Promise<void>((resolve) =>
+      setTimeout(() => {
+        resolve();
+      }, ROBOT_SPEED_MS_PER_M),
+    );
   }
 
   private timeToLoadUnloadCell() {
