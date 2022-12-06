@@ -5,9 +5,11 @@ const ROBOT_BASE_POSITION: Position = {
   column: 0,
 };
 
+const RESERVED_COLUMN_FOR_ROBOT_MOVEMENT = 1;
+
 const WAREHOUSE_SIZE = Object.freeze({
   ROWS: 15,
-  COLUMNS: 15,
+  COLUMNS: 15 + RESERVED_COLUMN_FOR_ROBOT_MOVEMENT,
 });
 
 const ROBOT_SPEED_MS_PER_M = 1000;
