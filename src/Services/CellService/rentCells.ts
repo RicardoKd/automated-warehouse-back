@@ -12,8 +12,6 @@ const rentCells = async ({
   rentEndDate,
   quantityOfCellsToBeUsed,
 }: RentCellsReqBody): Promise<ServiceResponse> => {
-  console.log(quantityOfCellsToBeUsed, ownerId);
-
   try {
     if (!checkCustomerPay()) {
       return createServiceResponse(false, 500, "Can`t pay!");
