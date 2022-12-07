@@ -6,7 +6,6 @@ export type GetPhysicalCellsReqBody = {
 export type PutPhysicalCellsReqBody = {
   ownerId: string;
   cellsDescriptions: [];
-  quantityOfCellsToBeUsed: number;
 };
 
 export type RentCellsReqBody = {

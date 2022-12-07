@@ -7,21 +7,11 @@ import type ServiceResponse from "../../ts/types/ServiceResponse";
 import createServiceResponse from "../createServiceResponse.js";
 
 const putPhysicalCell = async (
-  {
-    ownerId,
-    cellsDescriptions,
-    quantityOfCellsToBeUsed,
-  }: PutPhysicalCellsReqBody,
+  { ownerId, cellsDescriptions }: PutPhysicalCellsReqBody,
   robot: IRobot,
 ): Promise<ServiceResponse> => {
   try {
-    if (quantityOfCellsToBeUsed !== cellsDescriptions.length) {
-      return createServiceResponse(
-        false,
-        500,
-        `Descriptions must be provided for eaach cell. Not enough descriptions`,
-      );
-    }
+    const quantityOfCellsToBeUsed = cellsDescriptions.length;
 
     await mongoose.connect(DB_URI);
 
