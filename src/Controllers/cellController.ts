@@ -58,7 +58,7 @@ const putPhysicalCells = async (
     return reply.send({ payload });
   }
 
-  return reply.send({ errorMessage });
+  return reply.send({ errorMessage, status });
 };
 
 const getPhysicalCells = async (

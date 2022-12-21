@@ -11,9 +11,10 @@ const getPhysicalCells = async (
   robot: IRobot,
 ): Promise<ServiceResponse> => {
   try {
+    await mongoose.connect(DB_URI);
+    
     await Promise.all(
       cellsIds.map(async (cellId) => {
-        await mongoose.connect(DB_URI);
         const cell = await CellModel.findOneAndUpdate(
           { id: cellId },
           { description: "None", isOccupied: false },
@@ -24,10 +25,10 @@ const getPhysicalCells = async (
         if (!cell) {
           throw new Error(`Cell not found. Invalid cellId: ${cellId}`);
         }
-
-        await mongoose.disconnect();
       }),
     );
+
+    await mongoose.disconnect();
 
     return createServiceResponse(true, 200, "", {
       message: "Getting stuff from cells successfully",

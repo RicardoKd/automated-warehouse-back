@@ -18,46 +18,12 @@ export default class Robot implements IRobot {
     this.cellPostitioningMatrix = this.generateCellPostitioningMatrix();
   }
 
-  async getCellContent(cellsIds: number[]): Promise<boolean> {
-    try {
-      cellsIds.forEach(async (cellId) => {
-        await this.driveToCell(cellId);
-        await this.timeToLoadUnloadCell();
-        await this.driveToBasePosition();
-        await this.timeToLoadUnloadCell();
-      });
-
-      return true;
-    } catch (error) {
-      console.log(error);
-
-      return false;
-    }
-  }
-
   async getOneCellContent(cellId: number): Promise<boolean> {
     try {
       await this.driveToCell(cellId);
-      await this.timeToLoadUnloadCell();
+      await this.LoadUnloadCell();
       await this.driveToBasePosition();
-      await this.timeToLoadUnloadCell();
-
-      return true;
-    } catch (error) {
-      console.log(error);
-
-      return false;
-    }
-  }
-
-  async putInCells(cellsIds: number[]): Promise<boolean> {
-    try {
-      cellsIds.forEach(async (cellId) => {
-        await this.driveToBasePosition();
-        await this.timeToLoadUnloadCell();
-        await this.driveToCell(cellId);
-        await this.timeToLoadUnloadCell();
-      });
+      await this.LoadUnloadCell();
 
       return true;
     } catch (error) {
@@ -68,11 +34,13 @@ export default class Robot implements IRobot {
   }
 
   async putInCell(cellId: number): Promise<boolean> {
+    console.log(`cellId=${cellId}`);
     try {
       await this.driveToBasePosition();
-      await this.timeToLoadUnloadCell();
+      await this.LoadUnloadCell();
       await this.driveToCell(cellId);
-      await this.timeToLoadUnloadCell();
+      await this.LoadUnloadCell();
+      await this.driveToBasePosition();
 
       return true;
     } catch (error) {
@@ -91,6 +59,7 @@ export default class Robot implements IRobot {
   }
 
   private async driveToCell(cellId: number) {
+    console.log("start drive");
     const targetRow = Number(this.cellPostitioningMatrix[cellId]?.row);
     const targetColumn = Number(this.cellPostitioningMatrix[cellId]?.column);
 
@@ -217,9 +186,12 @@ export default class Robot implements IRobot {
     );
   }
 
-  private timeToLoadUnloadCell() {
-    return new Promise((resolve) =>
-      setTimeout(resolve, ROBOT_SPEED_TO_LOAD_UNLOAD_CELL),
+  private LoadUnloadCell() {
+    return new Promise<void>((resolve) =>
+      setTimeout(() => {
+        resolve();
+        console.log("load end");
+      }, ROBOT_SPEED_TO_LOAD_UNLOAD_CELL),
     );
   }
 }

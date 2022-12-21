@@ -14,7 +14,7 @@ const WAREHOUSE_SIZE = Object.freeze({
 
 const ROBOT_SPEED_MS_PER_M = 1000;
 
-const ROBOT_SPEED_TO_LOAD_UNLOAD_CELL = 5000;
+const ROBOT_SPEED_TO_LOAD_UNLOAD_CELL = 3000;
 
 const PORT = 8080;
 
@@ -92,11 +92,10 @@ const CELL_REQUEST_OPTIONS = Object.freeze({
     schema: {
       body: {
         type: "object",
-        required: ["ownerId", "cellsDescriptions", "quantityOfCellsToBeUsed"],
+        required: ["ownerId", "cellsDescriptions"],
         properties: {
           ownerId: { type: "string" },
           cellsDescriptions: { type: "array" },
-          quantityOfCellsToBeUsed: { type: "number" },
         },
       },
     },

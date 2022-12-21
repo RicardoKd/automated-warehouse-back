@@ -1,11 +1,11 @@
 export type GetPhysicalCellsReqBody = {
   ownerId: string;
-  cellsIds: [];
+  cellsIds: number[];
 };
 
 export type PutPhysicalCellsReqBody = {
   ownerId: string;
-  cellsDescriptions: [];
+  cellsDescriptions: string[];
 };
 
 export type RentCellsReqBody = {

@@ -14,7 +14,7 @@ const rentCells = async ({
 }: RentCellsReqBody): Promise<ServiceResponse> => {
   try {
     if (!checkCustomerPay()) {
-      return createServiceResponse(false, 500, "Can`t pay!");
+      return createServiceResponse(false, 470, "Can`t pay!");
     }
 
     await mongoose.connect(DB_URI);
@@ -30,7 +30,7 @@ const rentCells = async ({
     if (!freeCells || freeCells.length < quantityOfCellsToBeUsed) {
       return createServiceResponse(
         false,
-        500,
+        471,
         `There are not enough free cells for your order. There are only ${freeCells} free cells`,
       );
     }

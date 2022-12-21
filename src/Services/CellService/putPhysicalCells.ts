@@ -17,6 +17,7 @@ const putPhysicalCell = async (
 
     const rentedCells = await CellModel.find({
       ownerId,
+      isOccupied: false,
     }).lean();
 
     if (!rentedCells) {
@@ -37,14 +38,22 @@ const putPhysicalCell = async (
       );
     }
 
-    for (let i = 0; i < quantityOfCellsToBeUsed; i++) {
-      await robot.putInCell(rentedCells[i]?.id as number);
-      await CellModel.findByIdAndUpdate(rentedCells[i]?.id, {
-        description: cellsDescriptions[i],
-        isOccupied: true,
-      });
-    }
+    await Promise.all(
+      cellsDescriptions.map(async (_description, i) => {
+        console.log("1) rentedCells[i].id=" + rentedCells[i]?.id);
+        await CellModel.findByIdAndUpdate(rentedCells[i]?._id, {
+          description: cellsDescriptions[i],
+          isOccupied: true,
+        });
+        console.log("2) rentedCells[i].id=" + rentedCells[i]?.id);
+        const a = await robot.putInCell(rentedCells[i]?.id as number);
 
+        console.log(a);
+
+        console.log("3) rentedCells[i].id=" + rentedCells[i]?.id);
+      }),
+    );
+    console.log("end");
     await mongoose.disconnect();
   } catch (error) {
     return createServiceResponse(false, 500, String(error));
